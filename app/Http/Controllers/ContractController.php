@@ -13,6 +13,8 @@ use App\Models\Employee;
 use App\Models\Utility;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Luecano\NumeroALetras\NumeroALetras;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class ContractController extends Controller
@@ -926,6 +928,17 @@ public function generarContrato (Employee $employee, Contract $contract)
         $dia_hoy = date('d');
         $mes_hoy = date('m');
         $anio_hoy = date('Y');
+
+        $dia_adhesion = date('d', strtotime($employee->company_doj));
+        $mes_adhesion = date('m', strtotime($employee->company_doj));
+        $anio_adhesion = date('Y', strtotime($employee->company_doj));
+
+        $dinero_contrato =  floatval($contract->value);
+
+        $cantidad_dinero = number_format($dinero_contrato, 2, '.', ',');
+
+        $formatter = new NumeroALetras();
+        $letras_dinero =  $formatter->toInvoice($dinero_contrato, 2, '');
         //End Variables para el word
         $templateProcessor->setValue('nombre_empleado',ucwords(strtolower($nombre_empleado)));
         $templateProcessor->setValue('documento_empleado', $documento_empleado);
@@ -936,6 +949,12 @@ public function generarContrato (Employee $employee, Contract $contract)
         $templateProcessor->setValue('dia_hoy', $dia_hoy);
         $templateProcessor->setValue('mes_hoy', $mes_hoy);
         $templateProcessor->setValue('anio_hoy', $anio_hoy);
+        $templateProcessor->setValue('dia_adhesion', $dia_adhesion);
+        $templateProcessor->setValue('mes_adhesion', $mes_adhesion);
+        $templateProcessor->setValue('anio_adhesion', $anio_adhesion);
+
+        $templateProcessor->setValue('cantidad_dinero', $cantidad_dinero);
+        $templateProcessor->setValue('letras_dinero', $letras_dinero);
 
         $nombre_documento = strtolower($nombre_empleado);
         $codigoUnico = uniqid() . '_' . date('YmdHis');
@@ -946,6 +965,15 @@ public function generarContrato (Employee $employee, Contract $contract)
     } catch (\Throwable $th) {
         //throw $th;
         echo json_encode($th);
+    }
+}
+
+public function prueba()
+{
+    $path = 'documentos/78451245_654d6b4961fe1_20231109232913.docx';
+
+    if(Storage::exists($path)){
+        return Storage::download($path);
     }
 }
 

@@ -146,6 +146,10 @@
                                                         @endif
                                                     @endcan
 
+                                                    @php
+                                                            $documentPath=\App\Models\Utility::get_file('documentos');
+                                                    @endphp
+
                                                   
                                                         @if (\Auth::user()->type == 'company'||\Auth::user()->type == 'employee')
                                                     
@@ -154,7 +158,7 @@
                                                             </div>
 
                                                             <div class="action-btn btn-secondary ms-2">
-                                                                <a href="{{ asset('storage/documentos/'.$contract->url_documento) }}" class="mx-3 btn btn-sm d-inline-flex align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="{{__('Descargar Contrato')}}" ><i class="ti ti-download text-white"></i></a>
+                                                                <a href="{{ $documentPath . '/' . $contract->url_documento }}" class="mx-3 btn btn-sm d-inline-flex align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="{{__('Descargar Contrato')}}" download><i class="ti ti-download text-white"></i></a>
                                                             </div>
                                                     
                                                         @endif
